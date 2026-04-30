@@ -1,3 +1,23 @@
+#' Extract cardinal phenology variables for one bloom event
+#'
+#' Variables
+#'   DBS  Day of Bloom Start      (max positive curvature, ascending limb)
+#'   DMF  Day of Maximum Fitness  (max first derivative, ascending)
+#'   DMA  Day of Maximum Abundance
+#'   DMM  Day of Maximum Mortality (min first derivative, descending)
+#'   DBE  Day of Bloom End        (min negative curvature, descending limb)
+#'   MF   Maximum Fitness rate    (max Δlog-abundance day⁻¹)
+#'   MM   Maximum Mortality rate  (min Δlog-abundance day⁻¹)
+#'   ONS  Onset duration          DBS → DMF
+#'   CLI  Climax duration         DMF → DMA
+#'   DEC  Decline duration        DMA → DMM
+#'   END  Termination duration    DMM → DBE
+#'   IL   Increase length         DBS → DMA
+#'   DL   Decrease length         DMA → DBE
+#'   BL   Bloom length            DBS → DBE
+#'   HAB  Habitat duration        DMF → DMM
+#'   SI   Steepness Index (increase)
+#'   SD   Steepness Index (decrease)
 calc_pheno_one_event <- function(df) {
   df <- df %>% arrange(Index) %>% filter(Fit_OK, !is.na(Fitted_log))
   if (nrow(df) < 5) return(tibble())
