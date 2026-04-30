@@ -1,9 +1,9 @@
 # Phenology variables
-## Dinoflagellate Bloom Phenology — Jangcheon Harbor
 
 [![R](https://img.shields.io/badge/R-%3E%3D4.2-blue)](https://www.r-project.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
+## Dinoflagellate Bloom Phenology — Jangcheon Harbor   
 > Computes cardinal phenology variables for 32 dinoflagellate taxa from a 411-day fixed-station monitoring programme at Jangcheon Harbor, South Korea (2020–2021).  
 > Used in analyses of the **Abundant-Centre Hypothesis (ACH)** and functional trait–phenology relationships.
 
