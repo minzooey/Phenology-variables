@@ -1,4 +1,5 @@
-# Phenology-variables# Dinoflagellate Bloom Phenology — Jangcheon Harbor
+# Phenology variables
+## Dinoflagellate Bloom Phenology — Jangcheon Harbor
 
 [![R](https://img.shields.io/badge/R-%3E%3D4.2-blue)](https://www.r-project.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
@@ -6,7 +7,6 @@
 > Computes cardinal phenology variables for 32 dinoflagellate taxa from a 411-day fixed-station monitoring programme at Jangcheon Harbor, South Korea (2020–2021).  
 > Used in analyses of the **Abundant-Centre Hypothesis (ACH)** and functional trait–phenology relationships.
 
----
 
 ## Overview
 
@@ -34,7 +34,6 @@ The pipeline transforms daily, 5-day-smoothed abundance time-series into quantit
 | SI | Steepness Index (increase) | log(MA/XO) / IL |
 | SD | Steepness Index (decrease) | log(MA/XE) / DL |
 
----
 
 ## Pipeline
 
@@ -68,7 +67,6 @@ Step 5  Phenology variable extraction
 Output  5 × .xlsx files (see Outputs section)
 ```
 
----
 
 ## Repository structure
 
@@ -88,7 +86,6 @@ Output  5 × .xlsx files (see Outputs section)
 └── README.md
 ```
 
----
 
 ## Requirements
 
@@ -101,7 +98,6 @@ All packages are installed automatically on first run if missing.
 
 Tested on **R ≥ 4.2** (macOS / Linux). No compiled dependencies required.
 
----
 
 ## Usage
 
@@ -120,7 +116,6 @@ source("phenology_dinoflagellate.R")
 
 Output files are written to `Output_YYMMDD/` inside `INPUT_DIR`.
 
----
 
 ## Key parameters
 
@@ -137,7 +132,6 @@ Output files are written to `Output_YYMMDD/` inside `INPUT_DIR`.
 | `spar_fixed` | 0.9 | Smoothing parameter when `fit_mode = "fixed_spar"` |
 | `n_boot` | 200 | Bootstrap iterations for 95% CI |
 
----
 
 ## Citation
 
@@ -145,7 +139,6 @@ If you use this code, please cite the associated manuscript:
 
 > [Author(s)]. (*in prep.*). Functional traits mediate bloom phenology patterns in dinoflagellate communities: testing the Abundant-Centre Hypothesis at a fixed coastal station. *Limnology and Oceanography* / *Ecology Letters*.
 
----
 
 ## License
 
