@@ -100,6 +100,7 @@ p_raw <- ggplot(dino_long, aes(x = DOY, y = Abundance)) +
         axis.text.x  = element_text(angle = 45, hjust = 1),
         panel.grid.minor = element_blank())
 print(p_raw)
+ggsave(file.path(OUT_DIR,"daily abun.pdf"), plot = p_raw, width = 12, height = 7)
 
 ## — 2b) Log10-transform species columns only
 dino_sm5_log10 <- dino_sm5 %>%
@@ -150,6 +151,7 @@ p_peaks <- ggplot(dino_log_long, aes(x = Date, y = LogAbundance)) +
         axis.text.x = element_text(angle = 45, hjust = 1),
         panel.grid.minor = element_blank())
 print(p_peaks)
+ggsave(file.path(OUT_DIR,"local peaks.pdf"), plot = p_peaks, width = 12, height = 7)
 
 # ── 5) Peak merging (MDT-based score) ─────────────────────────────────────────
 peak_merg <- list(
@@ -175,6 +177,7 @@ p_mdt <- ggplot(mdt_sens, aes(x = MDT, y = Total_Events)) +
   labs(x = "MDT (days)", y = "N detected bloom events",
        title = "Sensitivity of event detection to MDT")
 print(p_mdt)
+ggsave(file.path(OUT_DIR,"MDT_sensitivity.pdf"), plot = p_mdt, width = 6, height = 4)
 
 ## — apply chosen MDT
 peak_merg_f       <- peak_merg
@@ -238,6 +241,7 @@ p_merged <- ggplot(dino_log_long, aes(x = Date, y = LogAbundance)) +
         axis.text.x = element_text(angle = 45, hjust = 1),
         panel.grid.minor = element_blank())
 print(p_merged)
+ggsave(file.path(OUT_DIR,"merged peaks.pdf"), plot = p_merged, width = 12, height = 7)
 
 # ── 6) Event delineation (trough-to-trough windows) ──────────────────────────
 event_par <- list(
@@ -295,6 +299,7 @@ p_event_check <- ggplot(event_data_for_fit, aes(x = Date, y = Abundance_log)) +
         axis.text.x = element_text(angle = 45, hjust = 1),
         panel.grid.minor = element_blank())
 print(p_event_check)
+ggsave(file.path(OUT_DIR,"event-specific peaks.pdf"), plot = p_event_check, width = 12, height = 7)
 
 # ── 7) Cubic smoothing spline + residual bootstrap CI ─────────────────────────
 spline_par <- list(
@@ -313,6 +318,28 @@ spline_par <- list(
 functs4 <- list.files(path = file.path(INPUT_DIR, "ONE/4_Fit & phenology variables"), pattern = "\\.R$", full.names = TRUE, ignore.case = TRUE)
 
 lapply(functs4, source)
+
+#' Fit cubic smoothing spline with residual bootstrap CI for one event
+#'
+#' Efficiency: bootstrap matrix filled with vapply for type-safety;
+#'             CI computed in one apply pass.
+event_data_input <- if (exists("event_data_for_fit")) event_data_for_fit else event_data
+if (!"Global_Event_ID" %in% names(event_data_input))
+  event_data_input <- mutate(event_data_input, Global_Event_ID = paste(Species, Event_ID, sep = "_"))
+
+event_spline <- event_data_input %>%
+  group_by(Species, Event_ID) %>%
+  group_split() %>%
+  map_dfr(function(dat) {
+    res <- fit_event_spline(dat, spline_par)
+    if (is.null(res)) {
+      dat %>% arrange(Index) %>%
+        mutate(Fitted_log = NA_real_, CI_lwr = NA_real_, CI_upr = NA_real_,
+               Spline_spar = NA_real_, Spline_df = NA_real_, Spline_cv = NA_real_,
+               Fit_Mode = spline_par$fit_mode, Fit_OK = FALSE)
+    } else res
+  }) %>%
+  ungroup()
 
 ## — quality flagging
 event_quality <- event_spline %>%
@@ -394,11 +421,12 @@ p_spline_check <- ggplot(event_spline, aes(x = Date)) +
         axis.text.x = element_text(angle = 45, hjust = 1),
         panel.grid.minor = element_blank())
 print(p_spline_check)
+ggsave(file.path(OUT_DIR,"cubic smoothin spline.pdf"), plot = p_spline_check, width = 12, height = 7)
 
 # ── 8) Cardinal phenology variables ──────────────────────────────────────────
 phenology_vars <- event_spline %>%
   group_by(Species, Event_ID) %>%
-  group_split() %>%gi 
+  group_split() %>%
   map_dfr(calc_pheno_one_event)
 
 write.xlsx(phenology_vars,
@@ -418,7 +446,8 @@ pheno_points <- phenology_vars %>%
       Variable == "DMM_Date" ~ XM,
       Variable == "DBE_Date" ~ XE
     ),
-    Variable = gsub("_Date", "", Variable)
+    Variable = gsub("_Date", "", Variable),
+    Global_Event_ID = paste0(Species,"_",Event_ID)
   )
 
 p_pheno <- ggplot(event_spline, aes(x = Date, y = Fitted_log)) +
@@ -427,10 +456,11 @@ p_pheno <- ggplot(event_spline, aes(x = Date, y = Fitted_log)) +
   geom_point(data = pheno_points,
              aes(x = Date, y = Value, shape = Variable),
              size = 2, inherit.aes = FALSE) +
-  facet_wrap(~Species + Event_ID, scales = "free_y", ncol = 5) +
+  facet_wrap(~Global_Event_ID, scales = "free_y", ncol = 8) +
   labs(x = NULL, y = expression(log[10](x + 1)),
        title = "Step 5. Cardinal phenology variables") +
   theme_bw(base_size = 11)
 print(p_pheno)
+ggsave(file.path(OUT_DIR,"phenology variables.pdf"), plot = p_pheno, width = 12, height = 7)
 
 message("\n✓ All outputs written to: ", OUT_DIR)
