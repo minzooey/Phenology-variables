@@ -137,7 +137,6 @@ Output files are written to `Output_YYMMDD/` inside `INPUT_DIR`.
 
 If you use this code, please cite the associated manuscript:
 
-> [Author(s)]. (*in prep.*). Functional traits mediate bloom phenology patterns in dinoflagellate communities: testing the Abundant-Centre Hypothesis at a fixed coastal station. *Limnology and Oceanography* / *Ecology Letters*.
 
 
 ## License
