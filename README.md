@@ -136,9 +136,3 @@ Output files are written to `Output_YYMMDD/` inside `INPUT_DIR`.
 ## Citation
 
 If you use this code, please cite the associated manuscript:
-
-
-
-## License
-
-MIT © [Author Name] — see [LICENSE](LICENSE) for details.
